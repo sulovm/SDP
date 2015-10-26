@@ -7,17 +7,7 @@
 
 
 # Задача 1.
- (15 т.) Реализирайте цикличен списък със следния интерфейс:
-	* ```void toStart(const T& element)```; 
-	* ```void toEnd(const T& element)```; 
-	* ```void insertAt(const T& element, unsigned index)```; 
-	* ```T removeFromStart()```; 
-	* ```Т removeFromEnd()```; 
-	* ```void remove(const T& what)```; 
-	* ```void removeFrom(T& element, unsigned index)```; 
-	* ```int isMember(const T& what) const```; 
-	* ```friend ostream& operator<<
-		(ostream& out, const CyclicList& list)```; 
+ (15 т.) Реализирайте цикличен списък със следния интерфейс:* ```void toStart(const T& element);```* ```void toEnd(const T& element);```* ```void insertAt(const T& element, unsigned index);```* ```T removeFromStart();```* ```Т removeFromEnd();```* ```void remove(const T& what);```* ```void removeFrom(T& element, unsigned index);```* ```int isMember(const T& what) const;``` * ```friend ostream& operator<<(ostream& out, const CyclicList& list);``` 
 ```Забележка:``` Разликата между toStart и toEnd е, че при
 последователно многократно извикване на първата всеки нов елемент 
 отива пред предходно добавения, а при втората - новият е след 
@@ -29,10 +19,7 @@ next на последния елемент да сочи към първия. �
 # Задача 2.
  (5 т.) Към интерфейса от задача 1 да се добави вътрешен клас 
 Iterator, описващ итератор към цикличен списък, както и да се 
-добавят следните функции към интерфейса:
-
- 	* ```iterator begin()```; 
-	* ```iterator end()```;
+добавят следните функции към интерфейса:* ```iterator begin();```* ```iterator end();```
 
  които да връщат съответно към началото и края на списъка.
 
