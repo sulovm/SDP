@@ -7,8 +7,8 @@
 
 
 # Задача 1.
- (15 т.) Реализирайте цикличен списък със следния интерфейс:* ```void toStart(const T& element);```* ```void toEnd(const T& element);```* ```void insertAt(const T& element, unsigned index);```* ```T removeFromStart();```* ```Т removeFromEnd();```* ```void remove(const T& what);```* ```void removeFrom(T& element, unsigned index);```* ```int isMember(const T& what) const;``` * ```friend ostream& operator<<(ostream& out, const CyclicList& list);``` 
-```Забележка:``` Разликата между toStart и toEnd е, че при
+ (15 т.) Реализирайте цикличен списък със следния интерфейс:* ```void toStart(const T& element);``` * ```void toEnd(const T& element);``` * ```void insertAt(const T& element, unsigned index);``` * ```T removeFromStart();``` * ```Т removeFromEnd();``` * ```void remove(const T& what);``` * ```void removeFrom(T& element, unsigned index);``` * ```int isMember(const T& what) const;``` * ```friend ostream& operator<<(ostream& out, const CyclicList& list);``` 
+ ```Забележка:``` Разликата между toStart и toEnd е, че при
 последователно многократно извикване на първата всеки нов елемент 
 отива пред предходно добавения, а при втората - новият е след 
 предходния. Разглеждайте списъка като обикновен, само се грижете 
