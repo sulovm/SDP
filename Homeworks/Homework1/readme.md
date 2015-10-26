@@ -8,19 +8,14 @@
 
 # Задача 1.
  (15 т.) Реализирайте цикличен списък със следния интерфейс:
-	* ```void toStart(const T& element)```; 
-	
-* ```void toEnd(const T& element)```;
+	* ```void toStart(const T& element)```;
+	* ```void toEnd(const T& element)```;
 	* ```void insertAt(const T& element, unsigned index)```;
-	
-* ```T removeFromStart()```; 
-	
-* ```Т removeFromEnd()```; 
-	
-* ```void remove(const T& what)```;
+	* ```T removeFromStart()```;
+	* ```Т removeFromEnd()```;
+	* ```void remove(const T& what)```;
 	* ```void removeFrom(T& element, unsigned index)```;
-	* ```int isMember(const T& what) const```; 
-
+	* ```int isMember(const T& what) const```;
 	* ```friend ostream& operator<<
 		(ostream& out, const CyclicList& list)```;
 ```Забележка:``` Разликата между toStart и toEnd е, че при
@@ -36,9 +31,8 @@ next на последния елемент да сочи към първия. �
 Iterator, описващ итератор към цикличен списък, както и да се 
 добавят следните функции към интерфейса:
 
-	* ```iterator begin()```;
-	
-* ```iterator end()```;
+ 	* ```iterator begin()```;
+	* ```iterator end()```;
 
 които да връщат съответно към началото и края на списъка.
 
