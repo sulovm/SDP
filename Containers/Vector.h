@@ -27,15 +27,15 @@ public:
     }
     Vector& operator =(const Vector<T>& other);
 
-    size_t getSize()
+    size_t getSize() const
     {
         return size;
     }
-    size_t getCapacity()
+    size_t getCapacity() const
     {
         return capacity;
     }
-    bool empty()
+    bool empty() const
     {
         return size == 0;
     }
@@ -54,7 +54,7 @@ public:
     void removeFrom(T& element, unsigned index);
     void clear();
 
-    void print();
+    void print() const;
 private:
     void copy(const Vector<T>& other);
     void destroy();
@@ -202,7 +202,7 @@ void Vector<T>::clear()
 }
 
 template <typename T>
-void Vector<T>::print()
+void Vector<T>::print() const
 {
     if (empty())
     {

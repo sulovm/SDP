@@ -30,7 +30,7 @@ public:
     }
     LList<T>& operator =(const LList& other);
 
-    bool empty()
+    bool empty() const
     {
         return start == NULL;
     }
@@ -42,8 +42,8 @@ public:
 
     void deleteAt(T& element, unsigned index);
 
-    void print();
-    size_t size();
+    void print() const;
+    size_t size() const;
 private:
     void copy(const LList& other);
     void destroy();
@@ -211,7 +211,7 @@ void LList<T>::deleteAt(T& element, unsigned index)
 }
 
 template <typename T>
-void LList<T>::print()
+void LList<T>::print() const
 {
     if (empty())
     {
@@ -228,7 +228,7 @@ void LList<T>::print()
 }
 
 template <typename T>
-size_t LList<T>::size()
+size_t LList<T>::size() const
 {
     if (empty())
     {
