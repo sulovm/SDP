@@ -1,3 +1,6 @@
+#ifndef HEAP_H_INCLUDED
+#define HEAP_H_INCLUDED
+
 #include <vector>
 #include <ostream>
 #include <algorithm>
@@ -8,13 +11,14 @@ class BinaryHeap{
    public:
       BinaryHeap() : heap() {}
 
-      int size() const {return heap.size() - 1;}
+      int lastIndex() const {return heap.size() - 1;}
+      int getSize() const {return heap.size();}
       void push(const T& data) {
          heap.push_back(data);
-         siftUp(size());
+         siftUp(lastIndex());
       }
       void pop(){
-         std::swap(heap[top], heap[size()]);
+         std::swap(heap[top], heap[lastIndex()]);
          heap.pop_back();
          siftDown(top);
       }
@@ -53,7 +57,7 @@ class BinaryHeap{
 template<typename T>
 std::ostream& operator<<(std::ostream& out, BinaryHeap<T> binheap){
    if (binheap.isEmpty()){
-      out << "[]";
+      out << "[]\n";
       return out;
    }
    typename std::vector<T>::const_iterator iter = binheap.begin();
@@ -61,7 +65,8 @@ std::ostream& operator<<(std::ostream& out, BinaryHeap<T> binheap){
    for (;iter != binheap.end() - 1; ++iter){
       out << *iter << ", ";
    }
-   out << *(binheap.end() - 1) << "]";
+   out << *(binheap.end() - 1) << "]\n";
+   return out;
 }
 
 template<typename T>
@@ -81,9 +86,9 @@ void BinaryHeap<T>::siftDown(int index){
    int current = index;
    int left = leftChild(current), right = rightChild(current);
 
-   while ((left <= size() && heap[current] < heap[left]) ||
-          (right <= size() && heap[current] < heap[right])){
-      if (left <= size() && right <= size()){
+   while ((left <= lastIndex() && heap[current] < heap[left]) ||
+          (right <= lastIndex() && heap[current] < heap[right])){
+      if (left <= lastIndex() && right <= lastIndex()){
          if (heap[left] < heap[right]){
             std::swap(heap[current], heap[right]);
             current = right;
@@ -95,15 +100,18 @@ void BinaryHeap<T>::siftDown(int index){
             left = leftChild(current); right = rightChild(current);
          }
       }
-      else if (left <= size()){
+      else if (left <= lastIndex()){
          std::swap(heap[current], heap[left]);
          current = left;
          left = leftChild(current); right = rightChild(current);
       }
-      else if (right <= size()){
+      else if (right <= lastIndex()){
          std::swap(heap[current], heap[right]);
          current = right;
          left = leftChild(current); right = rightChild(current);
       }
    }
 }
+
+
+#endif // HEAP_H_INCLUDED
