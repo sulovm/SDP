@@ -5,28 +5,28 @@
 #include <iostream>
 
 template <typename T>
-struct Node
+struct NodeL
 {
     T data;
-    Node<T>* next;
+    NodeL<T>* next;
 
-    Node(const T& d):data(d), next(NULL) {}
+    NodeL(const T& d):data(d), next(NULL) {}
 };
 
 template <typename T>
 class LListIter
 {
-    Node<T>* start;
-    Node<T>* last;
+    NodeL<T>* start;
+    NodeL<T>* last;
 
 public:
     class Iterator
     {
-        Node<T>* ptr;
+        NodeL<T>* ptr;
     public:
         Iterator(): ptr(NULL) {}
 
-        Iterator(Node<T>* p) : ptr(p) {}
+        Iterator(NodeL<T>* p) : ptr(p) {}
 
         Iterator(const Iterator& other) : ptr(other.ptr) {}
 
@@ -45,19 +45,19 @@ public:
         {
             return ptr->data;
         }
-        Node<T>* operator->()
+        NodeL<T>* operator->()
         {
             return ptr;
         }
 
-        Node<T>* getPtr()
+        NodeL<T>* getPtr()
         {
             return ptr;
         }
 
         Iterator& operator +(unsigned offset)
         {
-            Node<T>* p = ptr;
+            NodeL<T>* p = ptr;
             for (int i = 1; i <= offset; i++)
             {
                 p = p->next;
@@ -110,7 +110,7 @@ public:
         return Iterator(last);
     }
 
-    void print() const;
+    std::ostream& print(std::ostream& out) const;
     size_t size() const;
 
     void reverse();
@@ -125,12 +125,12 @@ void LListIter<T>::copy(const LListIter& other)
 {
     if (other.start != NULL)
     {
-        start = new Node<T>(other.start->data);
-        Node<T>* p = other.start->next;
-        Node<T>* q = start;
+        start = new NodeL<T>(other.start->data);
+        NodeL<T>* p = other.start->next;
+        NodeL<T>* q = start;
         while (p != NULL)
         {
-            Node<T>* newBox = new Node<T>(p->data);
+            NodeL<T>* newBox = new NodeL<T>(p->data);
             p = p->next;
             q->next = newBox;
             q = newBox;
@@ -149,7 +149,7 @@ void LListIter<T>::destroy()
 {
     if (!empty())
     {
-        Node<T>* p;
+        NodeL<T>* p;
         while (start != NULL)
         {
             p = start;
@@ -176,12 +176,12 @@ void LListIter<T>::toEnd(const T& element)
 {
     if (empty())
     {
-        start = new Node<T>(element);
+        start = new NodeL<T>(element);
         last = start;
         return;
     }
-    Node<T>* p = last;
-    last = new Node<T>(element);
+    NodeL<T>* p = last;
+    last = new NodeL<T>(element);
     p->next = last;
     p = NULL;
 }
@@ -189,7 +189,7 @@ void LListIter<T>::toEnd(const T& element)
 template <typename T>
 void LListIter<T>::toStart(const T& element)
 {
-    Node<T>* p = new Node<T>(element);
+    NodeL<T>* p = new NodeL<T>(element);
     p->next = start;
     start = p;
     if (start->next == NULL)
@@ -220,7 +220,7 @@ void LListIter<T>::insertAfter(const T& element, unsigned index)
             toEnd(element);
             return;
         }
-        Node<T>* p = start;
+        NodeL<T>* p = start;
         for (int i = 1; i <= index; i++)
         {
             p = p->next;
@@ -238,7 +238,7 @@ void LListIter<T>::insertAfterPointed(Iterator it, const T& element)
         toEnd(element);
         return;
     }
-    Node<T>* q = new Node<T>(element);
+    NodeL<T>* q = new NodeL<T>(element);
     q->next = it->next;
     it->next = q;
     q = NULL;
@@ -252,13 +252,12 @@ void LListIter<T>::insertAtPointed(Iterator it, const T& element)
         toStart(element);
         return;
     }
-    //Node<T>* p = start;
     Iterator p = begin();
     while (p->next != it.getPtr())
     {
         p++;
     }
-    Node<T>* q = new Node<T>(element);
+    NodeL<T>* q = new NodeL<T>(element);
     q->next = it->next;
     p->next = q;
     q = NULL;
@@ -270,7 +269,7 @@ void LListIter<T>::deleteAt(T& element, unsigned index)
     assert(index < size());
     if (!empty())
     {
-        Node<T>* p;
+        NodeL<T>* p;
         if (index == 0)
         {
             element = start->data;
@@ -298,7 +297,7 @@ void LListIter<T>::deleteAt(T& element, unsigned index)
         {
             p = p->next;
         }
-        Node<T>* q = p->next;
+        NodeL<T>* q = p->next;
         element = q->data;
         p->next = q->next;
         delete q;
@@ -306,20 +305,26 @@ void LListIter<T>::deleteAt(T& element, unsigned index)
 }
 
 template <typename T>
-void LListIter<T>::print() const
+std::ostream& LListIter<T>::print(std::ostream& out) const
 {
     if (empty())
     {
-        std::cout << "The list is empty!\n";
-        return;
+        out << "The list is empty!";
+        return out;
     }
-    Node<T>* p = start;
+    NodeL<T>* p = start;
     while (p != NULL)
     {
-        std::cout << p->data << " ";
+        out << p->data << " ";
         p = p->next;
     }
-    std::cout << std::endl;
+    return out;
+}
+
+template <typename T>
+std::ostream& operator << (std::ostream& out, const LListIter<T>& list)
+{
+    return list.print(out);
 }
 
 template <typename T>
@@ -330,7 +335,7 @@ size_t LListIter<T>::size() const
         return 0;
     }
     size_t count = 0;
-    Node<T>* p = start;
+    NodeL<T>* p = start;
     while (p != NULL)
     {
         count++;

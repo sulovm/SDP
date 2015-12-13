@@ -42,7 +42,7 @@ public:
 
     void deleteAt(T& element, unsigned index);
 
-    void print() const;
+    std::ostream& print(std::ostream& out) const;
     size_t size() const;
 private:
     void copy(const LList& other);
@@ -211,20 +211,26 @@ void LList<T>::deleteAt(T& element, unsigned index)
 }
 
 template <typename T>
-void LList<T>::print() const
+std::ostream& LList<T>::print(std::ostream& out) const
 {
     if (empty())
     {
-        std::cout << "The list is empty!\n";
-        return;
+        out << "The list is empty!";
+        return out;
     }
     Node<T>* p = start;
     while (p != NULL)
     {
-        std::cout << p->data << " ";
+        out << p->data << " ";
         p = p->next;
     }
-    std::cout << std::endl;
+    return out;
+}
+
+template <typename T>
+std::ostream& operator << (std::ostream& out, const LList<T>& list)
+{
+    return list.print(out);
 }
 
 template <typename T>

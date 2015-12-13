@@ -54,7 +54,7 @@ public:
     void removeFrom(T& element, unsigned index);
     void clear();
 
-    void print() const;
+    std::ostream& print(std::ostream& out) const;
 private:
     void copy(const Vector<T>& other);
     void destroy();
@@ -202,19 +202,27 @@ void Vector<T>::clear()
 }
 
 template <typename T>
-void Vector<T>::print() const
+std::ostream& Vector<T>::print(std::ostream& out) const
 {
     if (empty())
     {
-        std::cout << "[]\n";
-        return;
+        out << "[]";
+        return out;
     }
-    std::cout << "[";
+    out << "[";
     for (unsigned i = 0; i < size - 1; i++)
     {
-        std::cout << arr[i] << ", ";
+        out << arr[i] << ", ";
     }
-    std::cout << arr[size - 1] << "]\n";
+    out << arr[size - 1] << "]";
+    return out;
 }
+
+template <typename T>
+std::ostream& operator << (std::ostream& out, const Vector<T>& v)
+{
+    return v.print(out);
+}
+
 
 #endif // VECTOR_H_INCLUDED
