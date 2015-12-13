@@ -46,7 +46,7 @@ public:
     }
     size_t getSize() const;
 
-    std::ostream& print(std::ostream& out);
+    std::ostream& print(std::ostream& out) const;
 private:
     void copyQueue(const Queue<T>& other);
     void destroyQueue();
@@ -137,7 +137,7 @@ size_t Queue<T>::getSize() const
 }
 
 template <typename T>
-std::ostream& Queue<T>::print(std::ostream& out)
+std::ostream& Queue<T>::print(std::ostream& out) const
 {
     if (empty())
     {

@@ -45,7 +45,7 @@ public:
     }
     size_t getSize() const;
 
-    std::ostream& print(std::ostream& out);
+    std::ostream& print(std::ostream& out) const;
 private:
     void copyStack(const Stack<T>& other);
     void destroyStack();
@@ -143,7 +143,7 @@ size_t Stack<T>::getSize() const
 }
 
 template <typename T>
-std::ostream& Stack<T>::print(std::ostream& out)
+std::ostream& Stack<T>::print(std::ostream& out) const
 {
     if (empty())
     {
