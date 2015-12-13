@@ -1,66 +1,52 @@
-#ifndef LLISTITER_H_INCLUDED
-#define LLISTITER_H_INCLUDED
+#ifndef VECTORITER_H_INCLUDED
+#define VECTORITER_H_INCLUDED
 
-#include <cassert>
 #include <iostream>
+#include <cassert>
+
+const int CAPACITY = 10;
 
 template <typename T>
-struct NodeL
+class VectorIter
 {
-    T data;
-    NodeL<T>* next;
-
-    NodeL(const T& d):data(d), next(NULL) {}
-};
-
-template <typename T>
-class LListIter
-{
-    NodeL<T>* start;
-    NodeL<T>* last;
-
+    T* arr;
+    size_t size;
+    size_t capacity;
 public:
     class Iterator
     {
-        NodeL<T>* ptr;
+        T* ptr;
     public:
         Iterator(): ptr(NULL) {}
 
-        Iterator(NodeL<T>* p) : ptr(p) {}
-
-        Iterator(const Iterator& other) : ptr(other.ptr) {}
+        Iterator(T* p) : ptr(p) {}
 
         Iterator operator++()
         {
-            ptr = ptr->next;
+            ptr++;
             return *this;
         }
         Iterator operator++(int junk)
         {
             Iterator result (ptr);
-            ptr = ptr->next;
+            ptr++;
             return result;
         }
-        T operator*()
+        T& operator*()
         {
-            return ptr->data;
+            return *ptr;
         }
-        NodeL<T>* operator->()
-        {
-            return ptr;
-        }
-
-        NodeL<T>* getPtr()
+        T* operator->()
         {
             return ptr;
         }
 
         Iterator& operator +(unsigned offset)
         {
-            NodeL<T>* p = ptr;
+            T* p = ptr;
             for (int i = 1; i <= offset; i++)
             {
-                p = p->next;
+                p++;
             }
             Iterator iterator(p);
             return iterator;
@@ -76,92 +62,93 @@ public:
         }
     };
 
-    LListIter():start(NULL), last(NULL){}
-    LListIter(const LListIter& other)
+    VectorIter(): arr(NULL), size(0), capacity(CAPACITY)
+    {
+        arr = new T[capacity];
+    }
+    VectorIter(const VectorIter<T>& other): arr(NULL)
     {
         copy(other);
     }
-    ~LListIter()
+    ~VectorIter()
     {
         destroy();
     }
-    LListIter<T>& operator =(const LListIter& other);
+    VectorIter& operator =(const VectorIter<T>& other);
 
+    size_t getSize() const
+    {
+        return size;
+    }
+    size_t getCapacity() const
+    {
+        return capacity;
+    }
     bool empty() const
     {
-        return start == NULL;
+        return size == 0;
+    }
+    T& operator [](unsigned index)
+    {
+        return arr[index];
+    }
+    T operator [](unsigned index) const
+    {
+        return arr[index];
     }
 
-    void toEnd(const T& element);
-    void toStart(const T& element);
+    void pushBack(const T& element);
+    void popBack(T& element);
     void insertAt(const T& element, unsigned index);
-    void insertAfter(const T& element, unsigned index);
-    void insertAfterPointed(Iterator it, const T& element);
-    void insertAtPointed(Iterator it, const T& element);
-
-    void deleteAt(T& element, unsigned index);
+    void removeFrom(T& element, unsigned index);
+    void clear();
 
     Iterator begin() const
     {
-        return Iterator(start);
+        return Iterator(arr);
     }
     Iterator end() const
     {
-        return Iterator(last);
+        return Iterator(arr + size - 1);
     }
 
     std::ostream& print(std::ostream& out) const;
-    size_t size() const;
 
     void reverse();
     void sort();
 private:
-    void copy(const LListIter& other);
+    void copy(const VectorIter<T>& other);
     void destroy();
+    void doubleCapacity();
+    void reduceCapacity();
 };
 
 template <typename T>
-void LListIter<T>::copy(const LListIter& other)
+void VectorIter<T>::copy(const VectorIter<T>& other)
 {
-    if (other.start != NULL)
+    size = other.size;
+    capacity = other.capacity;
+    assert (size <= capacity);
+    arr = new T[capacity];
+    assert (arr != NULL);
+    for (unsigned i = 0; i < size; i++)
     {
-        start = new NodeL<T>(other.start->data);
-        NodeL<T>* p = other.start->next;
-        NodeL<T>* q = start;
-        while (p != NULL)
-        {
-            NodeL<T>* newBox = new NodeL<T>(p->data);
-            p = p->next;
-            q->next = newBox;
-            q = newBox;
-        }
-        last = q;
-        q = NULL;
-    }
-    else
-    {
-        start = last = NULL;
+        arr[i] = other.arr[i];
     }
 }
 
 template <typename T>
-void LListIter<T>::destroy()
+void VectorIter<T>::destroy()
 {
-    if (!empty())
+    if (arr != NULL)
     {
-        NodeL<T>* p;
-        while (start != NULL)
-        {
-            p = start;
-            start = start->next;
-            delete p;
-        }
-        last = NULL;
+        delete [] arr;
+        arr = NULL;
     }
 }
 
 template <typename T>
-LListIter<T>& LListIter<T>::operator =(const LListIter& other)
+VectorIter<T>& VectorIter<T>::operator =(const VectorIter<T>& other)
 {
     if (this != &other)
     {
@@ -172,196 +159,150 @@ LListIter<T>& LListIter<T>::operator =(const LListIter& other)
 }
 
 template <typename T>
-void LListIter<T>::toEnd(const T& element)
+void VectorIter<T>::doubleCapacity()
+{
+    capacity *= 2;
+    T* newArr = new T[capacity];
+    assert (newArr != NULL);
+    for (unsigned i = 0; i < size; i++)
+    {
+        newArr[i] = arr[i];
+    }
+    delete [] arr;
+    arr = newArr;
+    newArr = NULL;
+}
+
+template <typename T>
+void VectorIter<T>::pushBack(const T& element)
+{
+    if (size == capacity)
+    {
+        doubleCapacity();
+    }
+    arr[size] = element;
+    size++;
+}
+
+template <typename T>
+void VectorIter<T>::reduceCapacity()
+{
+    assert (size <= capacity/4);
+    capacity /= 2;
+    T* newArr = new T[capacity];
+    assert (newArr != NULL);
+    for (unsigned i = 0; i < size; i++)
+    {
+        newArr[i] = arr[i];
+    }
+    delete [] arr;
+    arr = newArr;
+    newArr = NULL;
+}
+
+template <typename T>
+void VectorIter<T>::popBack(T& element)
+{
+    element = arr[size - 1];
+    size--;
+    if (size <= capacity/4)
+    {
+        reduceCapacity();
+    }
+}
+
+template <typename T>
+void VectorIter<T>::insertAt(const T& element, unsigned index)
+{
+    assert (index <= size);
+    if (size == capacity)
+    {
+        doubleCapacity();
+    }
+    if (index == size)
+    {
+        pushBack(element);
+        return;
+    }
+    for (unsigned i = size; i > index; i--)
+    {
+        arr[i] = arr[i - 1];
+    }
+    arr[index] = element;
+    size++;
+}
+
+template <typename T>
+void VectorIter<T>::removeFrom(T& element, unsigned index)
+{
+    assert (index <= size);
+    if (index == size)
+    {
+        popBack(element);
+        return;
+    }
+    element = arr[index];
+    for (unsigned i = index; i < size - 1; i++)
+    {
+        arr[i] = arr[i + 1];
+    }
+    size--;
+    if (size <= capacity/4)
+    {
+        reduceCapacity();
+    }
+}
+
+template <typename T>
+void VectorIter<T>::clear()
+{
+    destroy();
+    size = 0;
+    capacity = CAPACITY;
+    arr = new T[capacity];
+}
+
+template <typename T>
+std::ostream& VectorIter<T>::print(std::ostream& out) const
 {
     if (empty())
     {
-        start = new NodeL<T>(element);
-        last = start;
-        return;
-    }
-    NodeL<T>* p = last;
-    last = new NodeL<T>(element);
-    p->next = last;
-    p = NULL;
-}
-
-template <typename T>
-void LListIter<T>::toStart(const T& element)
-{
-    NodeL<T>* p = new NodeL<T>(element);
-    p->next = start;
-    start = p;
-    if (start->next == NULL)
-    {
-        last = start;
-    }
-    p = NULL;
-}
-
-template <typename T>
-void LListIter<T>::insertAt(const T& element, unsigned index)
-{
-    if (index == 0)
-    {
-        toStart(element);
-        return;
-    }
-    insertAfter(element, index - 1);
-}
-
-template <typename T>
-void LListIter<T>::insertAfter(const T& element, unsigned index)
-{
-    if (!empty())
-    {
-        if (index >= size())
-        {
-            toEnd(element);
-            return;
-        }
-        NodeL<T>* p = start;
-        for (int i = 1; i <= index; i++)
-        {
-            p = p->next;
-        }
-        insertAfterPointed(p, element);
-        p = NULL;
-    }
-}
-
-template <typename T>
-void LListIter<T>::insertAfterPointed(Iterator it, const T& element)
-{
-    if (it == end())
-    {
-        toEnd(element);
-        return;
-    }
-    NodeL<T>* q = new NodeL<T>(element);
-    q->next = it->next;
-    it->next = q;
-    q = NULL;
-}
-
-template <typename T>
-void LListIter<T>::insertAtPointed(Iterator it, const T& element)
-{
-    if (it == begin())
-    {
-        toStart(element);
-        return;
-    }
-    Iterator p = begin();
-    while (p->next != it.getPtr())
-    {
-        p++;
-    }
-    NodeL<T>* q = new NodeL<T>(element);
-    q->next = it->next;
-    p->next = q;
-    q = NULL;
-}
-
-template <typename T>
-void LListIter<T>::deleteAt(T& element, unsigned index)
-{
-    assert(index < size());
-    if (!empty())
-    {
-        NodeL<T>* p;
-        if (index == 0)
-        {
-            element = start->data;
-            p = start;
-            start = start->next;
-            delete p;
-            return;
-        }
-        size_t sizeOfList = size();
-        if (index == sizeOfList - 1)
-        {
-            element = last->data;
-            p = last;
-            last = start;
-            for (int i = 1; i < sizeOfList - 1; i++)
-            {
-                last = last->next;
-            }
-            last->next = NULL;
-            delete p;
-            return;
-        }
-        p = start;
-        for (int i = 1; i < index; i++)
-        {
-            p = p->next;
-        }
-        NodeL<T>* q = p->next;
-        element = q->data;
-        p->next = q->next;
-        delete q;
-    }
-}
-
-template <typename T>
-std::ostream& LListIter<T>::print(std::ostream& out) const
-{
-    if (empty())
-    {
-        out << "The list is empty!";
+        std::cout << "[]";
         return out;
     }
-    NodeL<T>* p = start;
-    while (p != NULL)
+    std::cout << "[";
+    for (unsigned i = 0; i < size - 1; i++)
     {
-        out << p->data << " ";
-        p = p->next;
+        std::cout << arr[i] << ", ";
     }
+    std::cout << arr[size - 1] << "]";
     return out;
 }
 
 template <typename T>
-std::ostream& operator << (std::ostream& out, const LListIter<T>& list)
+std::ostream& operator << (std::ostream& out, const VectorIter<T> v)
 {
-    return list.print(out);
+    return v.print(out);
 }
 
 template <typename T>
-size_t LListIter<T>::size() const
+void VectorIter<T>::reverse()
 {
-    if (empty())
-    {
-        return 0;
-    }
-    size_t count = 0;
-    NodeL<T>* p = start;
-    while (p != NULL)
-    {
-        count++;
-        p = p->next;
-    }
-    return count;
-}
-template <typename T>
-void LListIter<T>::reverse()
-{
-    LListIter<T> rev;
+    VectorIter<T> rev;
     Iterator iter = begin();
     while (iter != end())
     {
-        rev.toStart(*iter);
+        rev.insertAt(*iter, 0);
         iter++;
     }
-    rev.toStart(*iter);
+    rev.insertAt(*iter, 0);
     *this = rev;
 }
 
 template <typename T>
-void LListIter<T>::sort()
+void VectorIter<T>::sort()
 {
-    size_t listSize = size();
-    for (unsigned i = 0; i < listSize - 1; i++)
+    for (unsigned i = 0; i < size - 1; i++)
     {
         Iterator current = begin() + i;
         Iterator iter = current + 1;
@@ -372,8 +313,8 @@ void LListIter<T>::sort()
             {
                 min = *iter;
                 T temp = *current;
-                current->data = iter->data;
-                iter->data = temp;
+                *current = *iter;
+                *iter = temp;
             }
             iter++;
         }
@@ -381,10 +322,12 @@ void LListIter<T>::sort()
         {
             min = *iter;
             T temp = *current;
-            current->data = iter->data;
-            iter->data = temp;
+            *current = *iter;
+            *iter = temp;
         }
     }
 }
 
-#endif // LLISTITER_H_INCLUDED
+
+
+#endif // VECTORITER_H_INCLUDED
