@@ -147,7 +147,7 @@ std::ostream& Stack<T>::print(std::ostream& out) const
 {
     if (empty())
     {
-        out << "[]\n";
+        out << "[]";
         return out;
     }
     Node<T>* p = top;
@@ -157,7 +157,7 @@ std::ostream& Stack<T>::print(std::ostream& out) const
         out << p->data << ", ";
         p = p->next;
     }
-    out << p->data << "]\n";
+    out << p->data << "]";
     return out;
 }
 
