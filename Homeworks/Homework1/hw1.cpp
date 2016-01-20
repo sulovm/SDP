@@ -203,6 +203,14 @@ T CyclicList<T>::removeFromStart()
 {
     if (start != NULL)
     {
+        if (start == start->next)
+        {
+            T removed = start->inf;
+            delete start;
+            start = NULL;
+            return removed;
+        }
+
         Node<T>* r = start;
         Node<T>* p = start -> next;
         while (p -> next != start)
@@ -224,6 +232,7 @@ T CyclicList<T>::removeFromEnd()
         {
             T removed = start -> inf;
             delete start;
+            start = NULL;
             return removed;
         }
         Node<T>* p = start -> next;
